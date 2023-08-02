@@ -1,14 +1,27 @@
-import { useAtom } from "jotai";
-import { usersAtom } from "../store";
+import { useAtom, useSetAtom } from "jotai";
+import { allUsers, usersAtom } from "../store";
 import { Form } from "./Form";
+import { nanoid } from "nanoid";
 
 export const Forms = () => {
-  const [users, setUsers] = useAtom(usersAtom);
+  const [users] = useAtom(allUsers);
+  const setUsers = useSetAtom(usersAtom);
   const onAddUser = () => {
-    const id = Math.floor(Math.random() * 1000);
+    setUsers((localUsers) => {
+      const newUsers = new Map(localUsers);
 
-    setUsers((users) => {
-      const newUsers = new Map(users);
+      if (users.size === 0) {
+        const id = nanoid();
+
+        newUsers.set(id, {
+          id: id,
+          name: "John Doe",
+          email: "",
+        });
+      }
+
+      const id = nanoid();
+
       newUsers.set(id, {
         id,
         name: "John Doe",
@@ -19,11 +32,15 @@ export const Forms = () => {
     });
   };
 
+  const fakeId = nanoid();
+
   return (
     <>
-      {Array.from(users.values()).map((user) => (
-        <Form key={user.id} id={user.id} />
-      ))}
+      {(users.size === 0 ? [{ id: fakeId }] : Array.from(users.values())).map(
+        (user) => (
+          <Form key={user.id} id={user.id} />
+        ),
+      )}
       <button onClick={onAddUser}>Add user</button>
     </>
   );

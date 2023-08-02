@@ -1,6 +1,6 @@
 import { useAtom } from "jotai";
 import { useForm } from "react-hook-form";
-import { usersFamily } from "../store";
+import { removeUserFromLocalStorage, usersFamily } from "../store";
 
 type Values = {
   name: string;
@@ -9,10 +9,10 @@ type Values = {
 
 const defaultValues: Values = {
   name: "John Doe",
-  email: "john.doe@gmail.com",
+  email: "",
 };
 
-export const Form = ({ id }: { id: number }) => {
+export const Form = ({ id }: { id: string }) => {
   const [user, setUser] = useAtom(usersFamily(id));
 
   const { register, handleSubmit, watch } = useForm<Values>({
@@ -32,12 +32,8 @@ export const Form = ({ id }: { id: number }) => {
     });
   });
 
-  const onSubmit = (values: Values) => {
-    setUser({
-      id,
-      name: values.name,
-      email: values.email,
-    });
+  const onSubmit = () => {
+    removeUserFromLocalStorage(id);
   };
 
   return (
