@@ -3,8 +3,8 @@ import { atomFamily, atomWithStorage } from "jotai/utils";
 
 export type User = {
   id: string;
-  name: string;
-  email: string;
+  name?: string;
+  email?: string;
 };
 
 const remoteUsersAtom = atom(async () => {
@@ -12,13 +12,9 @@ const remoteUsersAtom = atom(async () => {
     resolve([
       {
         id: "abc",
-        name: "John Doe 1",
-        email: "remote@gmail.com",
       },
       {
         id: "def",
-        name: "Jane Doe 2",
-        email: "remote@gmail.com",
       },
     ]);
   });
@@ -72,6 +68,17 @@ export const usersAtom = atomWithStorage<Map<string, User>>(
   },
 );
 
+export const remoteUserFamily = atomFamily((id: string) => {
+  return atom(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return {
+      id,
+      name: "Remote User",
+      email: "remote@gmail.com",
+    };
+  });
+});
+
 export const usersFamily = atomFamily((id: string) =>
   atom(
     (get) => {
@@ -86,7 +93,7 @@ export const usersFamily = atomFamily((id: string) =>
       }
 
       if (user) {
-        return user;
+        return get(remoteUserFamily(id));
       }
     },
     (get, set, arg: User) => {
