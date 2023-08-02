@@ -1,7 +1,12 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
-import Canvas from '../components/Canvas'
+import dynamic from "next/dynamic";
+import Head from "next/head";
+import Image from "next/image";
+import styles from "../styles/Home.module.css";
+
+const Forms = dynamic(
+  () => import("../components/Forms").then((it) => it.Forms),
+  { ssr: false },
+);
 
 export default function Home() {
   return (
@@ -13,7 +18,7 @@ export default function Home() {
       </Head>
       <h1 className={styles.title}>With Jotai example</h1>
       <main className={styles.main}>
-        <Canvas />
+        <Forms />
       </main>
       <footer className={styles.footer}>
         <a
@@ -21,12 +26,12 @@ export default function Home() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by{' '}
+          Powered by{" "}
           <span className={styles.logo}>
             <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
           </span>
         </a>
       </footer>
     </div>
-  )
+  );
 }
