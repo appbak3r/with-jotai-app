@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { atomFamily, atomWithStorage } from "jotai/utils";
+import { atomFamily, atomWithStorage, unwrap } from "jotai/utils";
 
 export type User = {
   id: string;
@@ -7,18 +7,21 @@ export type User = {
   email?: string;
 };
 
-const remoteUsersAtom = atom(async () => {
-  return await new Promise<User[]>((resolve) => {
-    resolve([
-      {
-        id: "abc",
-      },
-      {
-        id: "def",
-      },
-    ]);
-  });
-});
+const remoteUsersAtom = unwrap(
+  atom(async () => {
+    return await new Promise<User[]>((resolve) => {
+      resolve([
+        {
+          id: "abc",
+        },
+        {
+          id: "def",
+        },
+      ]);
+    });
+  }),
+  (prev) => prev ?? [],
+);
 
 export const removeUserFromLocalStorage = (id: string) => {
   const users = localStorage.getItem("users");
@@ -47,7 +50,6 @@ export const usersAtom = atomWithStorage<Map<string, User>>(
   {
     getItem: (key) => {
       const item = localStorage.getItem(key);
-      console.log(item);
       if (item) {
         const parsedItem = JSON.parse(item);
         const map = new Map<string, User>();
