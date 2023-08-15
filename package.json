@@ -6,7 +6,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "jotai": "1.7.3",
+    "jotai": "2.3.1",
     "nanoid": "^4.0.2",
     "next": "latest",
     "react": "18.2.0",
