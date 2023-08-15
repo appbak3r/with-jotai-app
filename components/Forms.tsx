@@ -1,8 +1,7 @@
 import { useAtom, useSetAtom } from "jotai";
-import { allUsers, usersAtom } from "../store";
-import { Form } from "./Form";
 import { nanoid } from "nanoid";
-import { Suspense } from "react";
+import Link from "next/link";
+import { allUsers, usersAtom } from "../store";
 
 export const Forms = () => {
   const [users] = useAtom(allUsers);
@@ -39,9 +38,7 @@ export const Forms = () => {
     <>
       {(users.size === 0 ? [{ id: fakeId }] : Array.from(users.values())).map(
         (user) => (
-          <Suspense fallback="loading data..." key={user.id}>
-            <Form id={user.id} />
-          </Suspense>
+          <Link href={`/form/${user.id}`}>Open form #{user.id}</Link>
         ),
       )}
       <button onClick={onAddUser}>Add user</button>

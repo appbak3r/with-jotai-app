@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { atomFamily, atomWithStorage, unwrap } from "jotai/utils";
+import { atomFamily, atomWithStorage } from "jotai/utils";
 
 export type User = {
   id: string;
@@ -7,21 +7,18 @@ export type User = {
   email?: string;
 };
 
-const remoteUsersAtom = unwrap(
-  atom(async () => {
-    return await new Promise<User[]>((resolve) => {
-      resolve([
-        {
-          id: "abc",
-        },
-        {
-          id: "def",
-        },
-      ]);
-    });
-  }),
-  (prev) => prev ?? [],
-);
+const remoteUsersAtom = atom(async () => {
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  return [
+    {
+      id: "abc",
+    },
+    {
+      id: "def",
+    },
+  ];
+});
 
 export const removeUserFromLocalStorage = (id: string) => {
   const users = localStorage.getItem("users");
@@ -32,7 +29,7 @@ export const removeUserFromLocalStorage = (id: string) => {
   }
 };
 
-export const allUsers = atom((get) => {
+export const allUsers = atom(async (get) => {
   const remoteUsers = get(remoteUsersAtom);
   const users = get(usersAtom);
 
@@ -61,17 +58,17 @@ export const usersAtom = atomWithStorage<Map<string, User>>(
       }
       return new Map();
     },
-    setItem: (key, newValue) => {
+    setItem: async (key, newValue) => {
       localStorage.setItem(key, JSON.stringify(Object.fromEntries(newValue)));
     },
-    removeItem: (key) => {
+    removeItem: async (key) => {
       localStorage.removeItem(key);
     },
   },
 );
 
 export const remoteUserFamily = atomFamily((id: string) => {
-  return atom(async () => {
+  return atom<Promise<User>>(async () => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     return {
       id,
@@ -83,7 +80,7 @@ export const remoteUserFamily = atomFamily((id: string) => {
 
 export const usersFamily = atomFamily((id: string) =>
   atom(
-    (get) => {
+    async (get) => {
       const remoteUsers = get(remoteUsersAtom);
       const users = get(usersAtom);
 
